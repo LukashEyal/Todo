@@ -3,7 +3,7 @@ import { TodoList } from "../cmps/TodoList.jsx"
 import { DataTable } from "../cmps/data-table/DataTable.jsx"
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-import { loadTodos, removeTodo, toggleTodo } from "../store/actions/todo.actions.js"
+import { loadTodos, removeTodo, toggleTodo, setFilter } from "../store/actions/todo.actions.js"
 
 const { useState, useEffect } = React
 const { Link, useSearchParams } = ReactRouterDOM
@@ -12,23 +12,32 @@ const { useSelector, useDispatch } = ReactRedux
 export function TodoIndex() {
 
     const todos = useSelector(state => state.todoModule.todos)
-    const dispatch = useDispatch()
+    
     
 
     // Special hook for accessing search-params:
     const [searchParams, setSearchParams] = useSearchParams()
-
+    
     const defaultFilter = todoService.getFilterFromSearchParams(searchParams)
 
-    const [filterBy, setFilterBy] = useState(defaultFilter)
+    const currentFilterBy = useSelector(state => state.todoModule.currentFilterBy)
+
+    const dispatch = useDispatch()
+
+   
+
+    
+ 
 
     useEffect(() => {
-        setSearchParams(filterBy)
-        loadTodos(filterBy)
+        setSearchParams(currentFilterBy)
+        loadTodos(currentFilterBy)
             .then(todos => showSuccessMsg(`Loaded todos`))
-    }, [filterBy])
+    }, [currentFilterBy])
 
     function onRemoveTodo(todoId) {
+        const confirmed = window.confirm("Are you sure you want to delete this todo?")
+        if (confirmed) {
         removeTodo(todoId)
             .then(() => {
               
@@ -39,6 +48,7 @@ export function TodoIndex() {
                 showErrorMsg('Cannot remove todo ' + todoId)
             })
     }
+}
 
     function onToggleTodo(todo) {
         const todoToSave = { ...todo, isDone: !todo.isDone }
@@ -57,7 +67,7 @@ export function TodoIndex() {
     
     return (
         <section className="todo-index">
-            <TodoFilter filterBy={filterBy} onSetFilterBy={setFilterBy} />
+            <TodoFilter filterBy={currentFilterBy} onSetFilterBy={setFilter} />
             <div>
                 <Link to="/todo/edit" className="btn" >Add Todo</Link>
             </div>

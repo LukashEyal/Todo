@@ -49,3 +49,7 @@ export function changeTxt(todo){
         })
 
 }
+
+export function setFilter(filterBy) {
+    store.dispatch({ type: 'SET_FILTER', filterBy })
+}

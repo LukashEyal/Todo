@@ -1,7 +1,11 @@
+import { todoService } from "../../services/todo.service.js"
+
+
 export const SET_TODOS = 'SET_TODOS'
 export const CHANGE_TXT = 'CHANGE_TXT'
 export const REMOVE_TODO = 'REMOVE_TODO'
 export const TOGGLE_TODO = 'TOGGLE_TODO'
+export const SET_FILTER = 'SET_FILTER'
 
 
 
@@ -9,7 +13,9 @@ export const TOGGLE_TODO = 'TOGGLE_TODO'
 
 
 const initialState = {
-todos: []
+todos: [],
+currentFilterBy: todoService.getDefaultFilter()
+
 }
 
 
@@ -39,14 +45,11 @@ export function todoReducr(state = initialState, cmd) {
                 )
             }
 
-        case CHANGE_TXT:
-            return {
-                ...state,
-                // setTodos(prevTodos => prevTodos.map(currTodo => (currTodo._id !== todo._id) ? currTodo : { ...savedTodo }))
-                todos: state.todos.map(todo => 
-                    (todo._id !== cmd.todo._id) ? todo : { ...cmd.todo }
-                )
-            }
+      case SET_FILTER:
+    return {
+        ...state,
+        currentFilterBy: cmd.filterBy
+    }
 
 
         default:
